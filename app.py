@@ -26,3 +26,15 @@ selected_year = st.sidebar.slider(
     step=1,
     value=2009,
 )
+
+# Seleccionar estado
+state_options = {"Todos los estados": None}
+state_mapping_dict = (
+    df[["EDONOM", "EDOCVE"]].drop_duplicates().set_index("EDONOM")["EDOCVE"].to_dict()
+)
+state_options.update(state_mapping_dict)
+
+selected_state_name = st.sidebar.selectbox(
+    "Estado:", options=list(state_options.keys())
+)
+selected_state_key = state_options[selected_state_name]
