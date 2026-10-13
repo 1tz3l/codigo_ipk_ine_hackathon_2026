@@ -16,3 +16,13 @@ def load_data():
     return df, geojson
 
 df, geojson_data = load_data()
+
+st.sidebar.title("Línea del tiempo")
+# Time playback slider 2009 - 2024
+selected_year = st.sidebar.slider(
+    "Año de elección:",
+    min_value=2009,
+    max_value=2024,
+    step=1,
+    value=2009,
+)
