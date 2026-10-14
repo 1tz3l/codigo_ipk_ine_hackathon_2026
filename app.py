@@ -68,3 +68,28 @@ df_younger_gen = get_participation_rate_df(df, selected_year, 18, 45)
 
 # Se obtienen los datos para el mapa derecho (Edades: 46 - 140)
 df_older_gen = get_participation_rate_df(df, selected_year, 46, 140)
+
+# Renderizar mapas
+st.title("Participación electoral por rangos de edad")
+st.markdown(f"**Año seleccionado:** {selected_year}")
+
+# Se crean 2 columnas para los mapas
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("Jóvenes (18 - 45 años)")
+    fig1 = px.choropleth_map(
+        df_younger_gen,
+        geojson=geojson_data,
+        locations="EDOCVE",
+        featureidkey="properties.matched_edocve",
+        color="participacion",
+        color_continuous_scale="Reds",
+        range_color=[0, 100],
+        map_style="carto-positron",
+        center={"lat": 23.6345, "lon": -102.5528}, 
+        zoom=4.0,
+    )
+    fig1.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=450)
+    st.plotly_chart(fig1, use_container_width=True)
+    
