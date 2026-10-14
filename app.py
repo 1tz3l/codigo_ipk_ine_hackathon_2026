@@ -109,3 +109,26 @@ with col2:
     )
     fig2.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=450)
     st.plotly_chart(fig2, use_container_width=True)
+
+# Otras métricas
+st.divider()
+
+if selected_state_key is not None:
+    st.subheader(f"Desglose detallado: {selected_state_name} ({selected_year})")
+
+    # Filtro por estado y año seleccionados
+    state_data = df[(df["AELEC"] == selected_year) & (df["EDOCVE"] == selected_state_key)]
+
+    # Grupo por género
+    gender_group = state_data.groupby("SEXO")[["SV", "NV"]].sum().reset_index()
+    gender_group["participacion"] = (gender_group["SV"] / (gender_group["SV"] + gender_group["NV"])) * 100
+
+    # Muestra las métricas
+    grp_col1, grp_col2 = st.columns(2)
+    # 0 = Hombre, 1 = Mujer, 2 = No binario
+    with grp_col1:
+        st.metric("Participación general por estado", f"{state_data["SV"].sum() / (state_data["NV"].sum()) * 100:.1f}%")
+    with grp_col2:
+        st.metric("Sí votaron", f"{state_data["SV"].sum():,}")
+else:
+    st.info("💡 Selecciona un estado en la barra lateral para ver el desglose detallado por género.")
