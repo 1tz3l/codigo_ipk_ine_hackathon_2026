@@ -92,4 +92,20 @@ with col1:
     )
     fig1.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=450)
     st.plotly_chart(fig1, use_container_width=True)
-    
+
+with col2:
+    st.subheader("Adultos (46 - 140 años)")
+    fig2 = px.choropleth_map(
+        df_older_gen,
+        geojson=geojson_data,
+        locations="EDOCVE",
+        featureidkey="properties.matched_edocve",
+        color="participacion",
+        color_continuous_scale="Blues",
+        range_color=[0, 100],
+        map_style="carto-positron",
+        center={"lat": 23.6345, "lon": -102.5528}, 
+        zoom=4.0,
+    )
+    fig2.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=450)
+    st.plotly_chart(fig2, use_container_width=True)
