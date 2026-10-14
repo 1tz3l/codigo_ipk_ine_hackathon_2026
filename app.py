@@ -38,3 +38,33 @@ selected_state_name = st.sidebar.selectbox(
     "Estado:", options=list(state_options.keys())
 )
 selected_state_key = state_options[selected_state_name]
+
+# Funcion para calcular el porcentaje de participación por edad y año
+ipython_link = None # marcador (placeholder) para la lógica
+
+def get_participation_rate_df(data, year, min_age, max_age):
+    filtered = data[
+        (data["AELEC"] == year)
+        & (data["EDAD"] >= min_age)
+        & (data["EDAD"] <= max_age)
+    ]
+
+    # Agrupado por EDOCVE; suma de SV y NV
+    grouped = (
+        filtered.groupby(["EDOCVE", "EDONOM"])[["SV", "NV"]].sum().reset_index()
+    )
+
+    # Se calcula el porcentaje de participación
+    grouped["participacion"] = (
+        grouped["SV"] / (grouped["SV"] + grouped["NV"])
+    ) * 100
+
+    # Se asegura que EDOCVE coincida con el formato de GeoJSON (int o str)
+    grouped["EDOCVE"] = grouped["EDOCVE"].astype(int)
+    return grouped
+
+# Se obtienen los datos para el mapa izquierdo (Edades: 18 - 45)
+df_younger_gen = get_participation_rate_df(df, selected_year, 18, 45)
+
+# Se obtienen los datos para el mapa derecho (Edades: 46 - 140)
+df_older_gen = get_participation_rate_df(df, selected_year, 46, 140)
