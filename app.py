@@ -10,7 +10,17 @@ st.set_page_config(
 
 @st.cache_data
 def load_data():
-    df = pd.read_parquet("steps/process_geo_data_2/voting_data.parquet")
+    # Carga solo las columnas necesarias para filtros y cálculos
+    columns_needed = [
+        "AELEC",
+        "EDOCVE",
+        "EDONOM",
+        "EDAD",
+        "SEXO",
+        "SV",
+        "NV",
+    ]
+    df = pd.read_parquet("steps/process_geo_data_2/voting_data.parquet", columns=columns_needed)
     with open("steps/process_geo_data_2/matched_geo_data.geojson", "r", encoding="utf-8") as f:
         geojson = json.load(f)
     return df, geojson
