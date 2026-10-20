@@ -9,23 +9,33 @@ st.set_page_config(
 )
 
 @st.cache_data
-def load_data():
+#def load_data():
     # Carga solo las columnas necesarias para filtros y cálculos
-    columns_needed = [
-        "AELEC",
-        "EDOCVE",
-        "EDONOM",
-        "EDAD",
-        "SEXO",
-        "SV",
-        "NV",
-    ]
-    df = pd.read_parquet("steps/process_geo_data_2/voting_data.parquet", columns=columns_needed)
+    #columns_needed = [
+        #"AELEC",
+        #"EDOCVE",
+        #"EDONOM",
+        #"EDAD",
+        #"SEXO",
+        #"SV",
+        #"NV",
+    #]
+    #df = pd.read_parquet("steps/process_geo_data_2/voting_data.parquet", columns=columns_needed)
+    #with open("steps/process_geo_data_2/matched_geo_data.geojson", "r", encoding="utf-8") as f:
+        #geojson = json.load(f)
+    #return df, geojson
+
+#df, geojson_data = load_data()
+
+def load_data_for_year(selected_year):
+    df_year = pd.read_parquet(
+        "steps/process_geo_data_2/voting_data.parquet",
+        columns=["AELEC", "EDOCVE", "EDONOM", "SEXO", "EDAD", "SV", "NV"],
+        filters=[("AELEC", "==", selected_year)],
+    )
     with open("steps/process_geo_data_2/matched_geo_data.geojson", "r", encoding="utf-8") as f:
         geojson = json.load(f)
-    return df, geojson
-
-df, geojson_data = load_data()
+    return df_year, geojson
 
 st.sidebar.title("Línea del tiempo")
 # Time playback slider 2009 - 2024
@@ -36,6 +46,8 @@ selected_year = st.sidebar.slider(
     step=1,
     value=2009,
 )
+
+df, geojson_data = load_data_for_year(selected_year)
 
 # Seleccionar estado
 state_options = {"Todos los estados": None}
