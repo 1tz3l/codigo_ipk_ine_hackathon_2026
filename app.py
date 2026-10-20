@@ -5,7 +5,7 @@ import streamlit as st
 
 # Configurar el ancho del layout para los mapas
 st.set_page_config(
-    page_title="La participación electoral entre diferentes grupos de edad", layout="wide"
+    page_title="¿Las mujeres votan?", layout="wide"
 )
 
 @st.cache_data
