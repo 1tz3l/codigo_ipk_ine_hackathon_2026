@@ -104,7 +104,7 @@ with col1:
     st.plotly_chart(fig1, use_container_width=True)
 
 with col2:
-    st.subheader("Adultos (46 - 140 años)")
+    st.subheader("Adultas (46 - 140 años)")
     fig2 = px.choropleth_map(
         df_older_gen,
         geojson=geojson_data,
