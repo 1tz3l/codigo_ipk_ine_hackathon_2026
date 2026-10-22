@@ -5,7 +5,7 @@ import streamlit as st
 
 # Configurar el ancho del layout para los mapas
 st.set_page_config(
-    page_title="¿Las mujeres votan?", layout="wide"
+    page_title="Participación electoral de las mujeres en México", layout="wide"
 )
 
 @st.cache_data
@@ -37,19 +37,19 @@ def load_data_for_year(selected_year):
         geojson = json.load(f)
     return df_year, geojson
 
-st.sidebar.title("Línea del tiempo")
+st.sidebar.title("Línea del tiempo electoral")
 # Time playback slider 2009 - 2024
 selected_year = st.sidebar.slider(
     "Año de elección:",
     min_value=2009,
     max_value=2024,
-    step=1,
+    step=3,
     value=2009,
 )
 
 df, geojson_data = load_data_for_year(selected_year)
 
-# Seleccionar estado
+## Seleccionar estado
 state_options = {"Todos los estados": None}
 state_mapping_dict = (
     df[["EDONOM", "EDOCVE"]].drop_duplicates().set_index("EDONOM")["EDOCVE"].to_dict()
@@ -71,17 +71,17 @@ def get_participation_rate_df(data, year, min_age, max_age):
         & (data["EDAD"] <= max_age)
     ]
 
-    # Agrupado por EDOCVE; suma de SV y NV
+    ## Agrupado por EDOCVE; suma de SV y NV
     grouped = (
         filtered.groupby(["EDOCVE", "EDONOM"])[["SV", "NV"]].sum().reset_index()
     )
 
-    # Se calcula el porcentaje de participación
-    grouped["participacion"] = (
+    ## Se calcula el porcentaje de participación
+    grouped["Participación"] = (
         grouped["SV"] / (grouped["SV"] + grouped["NV"])
     ) * 100
 
-    # Se asegura que EDOCVE coincida con el formato de GeoJSON (int o str)
+    ## Se asegura que EDOCVE coincida con el formato de GeoJSON (int o str)
     grouped["EDOCVE"] = grouped["EDOCVE"].astype(int)
     return grouped
 
@@ -92,20 +92,22 @@ df_younger_gen = get_participation_rate_df(df, selected_year, 18, 45)
 df_older_gen = get_participation_rate_df(df, selected_year, 46, 140)
 
 # Renderizar mapas
-st.title("Participación electoral por rangos de edad")
-st.markdown(f"**Año seleccionado:** {selected_year}")
+st.title("¿Las mujeres no votan?")
+st.subheader("Participación electoral por rangos de edad")
+#st.markdown(f"**Año de elección:** {selected_year}")
 
 # Se crean 2 columnas para los mapas
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("Jóvenes (18 - 45 años)")
+    st.subheader("18 - 45 años")
+    st.markdown(f"**Año de elección:** {selected_year}")
     fig1 = px.choropleth_map(
         df_younger_gen,
         geojson=geojson_data,
         locations="EDOCVE",
         featureidkey="properties.matched_edocve",
-        color="participacion",
+        color="Participación",
         color_continuous_scale="Reds",
         range_color=[0, 100],
         map_style="carto-positron",
@@ -116,13 +118,14 @@ with col1:
     st.plotly_chart(fig1, use_container_width=True)
 
 with col2:
-    st.subheader("Adultas (46 - 140 años)")
+    st.subheader("46 - 140 años")
+    st.markdown(f"**Año de elección:** {selected_year}")
     fig2 = px.choropleth_map(
         df_older_gen,
         geojson=geojson_data,
         locations="EDOCVE",
         featureidkey="properties.matched_edocve",
-        color="participacion",
+        color="Participación",
         color_continuous_scale="Blues",
         range_color=[0, 100],
         map_style="carto-positron",
@@ -148,4 +151,4 @@ if selected_state_key is not None:
     with grp_col2:
         st.metric("Sí votaron", f"{state_data["SV"].sum():,}")
 else:
-    st.info("💡 Selecciona un estado en la barra lateral para ver el desglose detallado por género.")
+    st.info("¿Quién decidirá tu futuro?")
