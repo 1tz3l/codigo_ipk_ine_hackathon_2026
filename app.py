@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 
 # Configurar el ancho del layout para los mapas
@@ -37,18 +38,20 @@ def load_data_for_year(selected_year):
         geojson = json.load(f)
     return df_year, geojson
 
+# Panel de control del slider 2009 - 2024
 st.sidebar.header("Panel de control")
 st.sidebar.info(
     "**ⓘ Información:** Utiliza el control deslizante para visualizar los resultados históricos."
 )
-# Time playback slider 2009 - 2024
-selected_year = st.sidebar.slider(
+
+election_year = [2009, 2012, 2015, 2018, 2021, 2024]
+
+selected_year = st.sidebar.select_slider(
     "Año de elección:",
-    min_value=2009,
-    max_value=2024,
-    step=3,
+    options=election_year
     value=2009,
 )
+
 st.sidebar.markdown("---")
 st.sidebar.caption("Fuente: Conteos Censales de Participación Ciudadana (CCPC), INE")
 
