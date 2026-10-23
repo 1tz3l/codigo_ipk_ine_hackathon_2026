@@ -48,7 +48,7 @@ election_year = [2009, 2012, 2015, 2018, 2021, 2024]
 
 selected_year = st.sidebar.select_slider(
     "Año de elección:",
-    options=election_year
+    options=election_year,
     value=2009,
 )
 
@@ -57,46 +57,28 @@ st.sidebar.caption("Fuente: Conteos Censales de Participación Ciudadana (CCPC),
 
 df, geojson_data = load_data_for_year(selected_year)
 
-# Funcion para calcular el porcentaje de participación por edad y año
-ipython_link = None # marcador (placeholder) para la lógica
-
-def get_participation_rate_df(data, year, min_age, max_age):
-    filtered = data[
-        (data["AELEC"] == year)
-        & (data["EDAD"] >= min_age)
-        & (data["EDAD"] <= max_age)
-    ]
-
-    ## Agrupado por EDOCVE; suma de SV y NV
-    grouped = (
-        filtered.groupby(["EDOCVE", "EDONOM"])[["SV", "NV"]].sum().reset_index()
-    )
-
-    ## Se calcula el porcentaje de participación
-    grouped["Participación"] = (
-        grouped["SV"] / (grouped["SV"] + grouped["NV"])
-    ) * 100
-
-    ## Se asegura que EDOCVE coincida con el formato de GeoJSON (int o str)
-    grouped["EDOCVE"] = grouped["EDOCVE"].astype(int)
-    return grouped
-
-# Se obtienen los datos para el mapa izquierdo (Edades: 18 - 45)
-df_younger_gen = get_participation_rate_df(df, selected_year, 18, 45)
-
-# Se obtienen los datos para el mapa derecho (Edades: 46 - 140)
-df_older_gen = get_participation_rate_df(df, selected_year, 46, 140)
-
-# Renderizar mapas
+# Título y subtítulo del dashboard
 st.title("¿Cuántas mujeres votaron en tu estado?")
 st.subheader(f"Año de elección: {selected_year}")
 
-# Se crean 2 columnas para los mapas
-col1, col2 = st.columns(2)
+# Columnas
+col1, col2 = st.columns([1.3, 0.7])
 
+## Columna 1: Mapas
 with col1:
-    fig1 = px.choropleth_map(
-        df_younger_gen,
+    df_map = df[df["AELEC"] == selected_year]
+    map_grouped = (
+        df_map.groupby(["EDOCVE", "EDONOM"])[["SV", "NV"]]
+        .sum()
+        .reset_index()
+    )
+    map_grouped["Participación"] = (
+        map_grouped["SV"] / (map_grouped["SV"] + map_grouped["NV"]) * 100
+    )
+    map_grouped["EDOCVE"] = map_grouped["EDOCVE"].astype(int)
+
+    fig_map = px.choropleth_map(
+        map_grouped,
         geojson=geojson_data,
         locations="EDOCVE",
         featureidkey="properties.matched_edocve",
@@ -105,15 +87,43 @@ with col1:
         range_color=[0, 100],
         map_style="carto-positron",
         center={"lat": 23.6345, "lon": -102.5528}, 
-        zoom=4.0,
+        zoom=4.2,
     )
-    fig1.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=450)
-    st.plotly_chart(fig1, use_container_width=True)
+    fig_map.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=400)
+    st.plotly_chart(fig_map, use_container_width=True)
+
+    st.divider()
+
+    st.subheader("Participación por Estado (2009 - 2024)")
+
+    df_heatmap = df[df["AELEC"].isin(election_year)]
+    heatmap_grouped = (
+        df_heatmap.groupby(["AELEC", "EDONOM"])[["SV", "NV"]]
+        .sum()
+        .reset_index()
+    )
+    heatmap_grouped["Participación"] = (
+        heatmap_grouped["SV"] / (heatmap_grouped["SV"] + heatmap_grouped["NV"]) * 100
+    )
+
+    pivot_heat = heatmap_grouped.pivot(
+        index="AELEC", columns="EDONOM", values="Participación"
+    )
+
+    fig_heat = px.imshow(
+        pivot_heat,
+        labels=dict(x="Estado", y="Año", color="Participación (%)"),
+        x=pivot_heat.columns,
+        y=pivot_heat.index.astype(str),
+        color_continuous_scale="Blues",
+        aspect="auto",
+    )
+    fig_heat.update_layout(margin={"r": 0, "t": 30, "l": 0, "b": 0}, height=300)
+    st.plotly_chart(fig_heat,use_container_width=True)
 
 with col2:
     st.subheader("46 - 140 años")
     fig2 = px.choropleth_map(
-        df_older_gen,
         geojson=geojson_data,
         locations="EDOCVE",
         featureidkey="properties.matched_edocve",
