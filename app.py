@@ -37,7 +37,10 @@ def load_data_for_year(selected_year):
         geojson = json.load(f)
     return df_year, geojson
 
-st.sidebar.title("Línea del tiempo electoral")
+st.sidebar.header("Panel de control")
+st.sidebar.info(
+    "**ⓘ Información:** Utiliza el control deslizante para visualizar los resultados históricos."
+)
 # Time playback slider 2009 - 2024
 selected_year = st.sidebar.slider(
     "Año de elección:",
@@ -46,20 +49,10 @@ selected_year = st.sidebar.slider(
     step=3,
     value=2009,
 )
+st.sidebar.markdown("---")
+st.sidebar.caption("Fuente: Conteos Censales de Participación Ciudadana (CCPC), INE")
 
 df, geojson_data = load_data_for_year(selected_year)
-
-## Seleccionar estado
-state_options = {"Todos los estados": None}
-state_mapping_dict = (
-    df[["EDONOM", "EDOCVE"]].drop_duplicates().set_index("EDONOM")["EDOCVE"].to_dict()
-)
-state_options.update(state_mapping_dict)
-
-selected_state_name = st.sidebar.selectbox(
-    "Estado:", options=list(state_options.keys())
-)
-selected_state_key = state_options[selected_state_name]
 
 # Funcion para calcular el porcentaje de participación por edad y año
 ipython_link = None # marcador (placeholder) para la lógica
@@ -92,36 +85,15 @@ df_younger_gen = get_participation_rate_df(df, selected_year, 18, 45)
 df_older_gen = get_participation_rate_df(df, selected_year, 46, 140)
 
 # Renderizar mapas
-st.title("¿Las mujeres no votan?")
-st.subheader("Participación electoral por rangos de edad")
-#st.markdown(f"**Año de elección:** {selected_year}")
+st.title("¿Cuántas mujeres votaron en tu estado?")
+st.subheader(f"Año de elección: {selected_year}")
 
 # Se crean 2 columnas para los mapas
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("18 - 45 años")
-    st.markdown(f"**Año de elección:** {selected_year}")
     fig1 = px.choropleth_map(
         df_younger_gen,
-        geojson=geojson_data,
-        locations="EDOCVE",
-        featureidkey="properties.matched_edocve",
-        color="Participación",
-        color_continuous_scale="Reds",
-        range_color=[0, 100],
-        map_style="carto-positron",
-        center={"lat": 23.6345, "lon": -102.5528}, 
-        zoom=4.0,
-    )
-    fig1.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=450)
-    st.plotly_chart(fig1, use_container_width=True)
-
-with col2:
-    st.subheader("46 - 140 años")
-    st.markdown(f"**Año de elección:** {selected_year}")
-    fig2 = px.choropleth_map(
-        df_older_gen,
         geojson=geojson_data,
         locations="EDOCVE",
         featureidkey="properties.matched_edocve",
@@ -132,23 +104,22 @@ with col2:
         center={"lat": 23.6345, "lon": -102.5528}, 
         zoom=4.0,
     )
+    fig1.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=450)
+    st.plotly_chart(fig1, use_container_width=True)
+
+with col2:
+    st.subheader("46 - 140 años")
+    fig2 = px.choropleth_map(
+        df_older_gen,
+        geojson=geojson_data,
+        locations="EDOCVE",
+        featureidkey="properties.matched_edocve",
+        color="Participación",
+        color_continuous_scale="Reds",
+        range_color=[0, 100],
+        map_style="carto-positron",
+        center={"lat": 23.6345, "lon": -102.5528}, 
+        zoom=4.0,
+    )
     fig2.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=450)
     st.plotly_chart(fig2, use_container_width=True)
-
-# Otras métricas
-st.divider()
-
-if selected_state_key is not None:
-    st.subheader(f"Desglose detallado: {selected_state_name} ({selected_year})")
-
-    # Filtro por estado y año seleccionados
-    state_data = df[(df["AELEC"] == selected_year) & (df["EDOCVE"] == selected_state_key)]
-
-    # Muestra las métricas
-    grp_col1, grp_col2 = st.columns(2)
-    with grp_col1:
-        st.metric("Participación general por estado", f"{state_data["SV"].sum() / (state_data["NV"].sum()) * 100:.1f}%")
-    with grp_col2:
-        st.metric("Sí votaron", f"{state_data["SV"].sum():,}")
-else:
-    st.info("¿Quién decidirá tu futuro?")
