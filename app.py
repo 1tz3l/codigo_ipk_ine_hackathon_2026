@@ -145,6 +145,9 @@ with col1:
         index="AELEC", columns="EDONOM", values="Participación"
     )
 
+    years_order = [2024, 2021, 2018, 2015, 2012, 2009]
+    pivot_heat = pivot_heat.reindex(years_order)
+
     years_str = [str(y) for y in pivot_heat.index]
 
     fig_heat = px.imshow(
@@ -160,8 +163,10 @@ with col1:
         tickmode="array",
         tickvals=years_str,
         ticktext=years_str,
+        categoryorder="array",
+        categoryarray=years_str,
     )
-    fig_heat.update_layout(margin={"r": 0, "t": 30, "l": 0, "b": 0}, height=320)
+    fig_heat.update_layout(margin={"r": 0, "t": 20, "l": 0, "b": 0}, height=320)
     st.plotly_chart(fig_heat,use_container_width=True)
 
 ## Columna 2: Lista con los estados que más votaron
