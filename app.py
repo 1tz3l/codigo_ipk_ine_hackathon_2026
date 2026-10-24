@@ -121,18 +121,31 @@ with col1:
     fig_heat.update_layout(margin={"r": 0, "t": 30, "l": 0, "b": 0}, height=300)
     st.plotly_chart(fig_heat,use_container_width=True)
 
+## Columna 2: Lista con los estados que más votaron
 with col2:
-    st.subheader("46 - 140 años")
-    fig2 = px.choropleth_map(
-        geojson=geojson_data,
-        locations="EDOCVE",
-        featureidkey="properties.matched_edocve",
-        color="Participación",
-        color_continuous_scale="Reds",
-        range_color=[0, 100],
-        map_style="carto-positron",
-        center={"lat": 23.6345, "lon": -102.5528}, 
-        zoom=4.0,
+    st.subheader(f"Top 15 Estados que más votaron en {selected_year}")
+
+    top_15_list = (
+        map_grouped.sort_values(by="SV", ascending=False).head(15).reset_index(drop=True)
     )
-    fig2.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=450)
-    st.plotly_chart(fig2, use_container_width=True)
+
+    fig_list = px.bar(
+        top_15_list,
+        x="SV",
+        y="EDONOM",
+        orientation="h",
+        text="SV",
+        color="SV",
+        color_continuous_scale="Reds",
+    )
+    fig_list.update_layout(
+        xaxis_title="Total de votos emitidos",
+        yaxis_title="",
+        yaxis=dict(autorange="reversed"),
+        margin={"r": 0, "t": 10, "l": 0, "b": 0}, 
+        height=650,
+        showlegend=False,
+        coloraxis_showscale=False,
+    )
+    fig_list.update_traces(texttemplate="%{text:,}", textposition="outside")
+    st.plotly_chart(fig_list, use_container_width=True)
