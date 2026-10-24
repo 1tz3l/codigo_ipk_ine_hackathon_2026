@@ -11,6 +11,44 @@ st.set_page_config(
 
 elections_by_year = [2009, 2012, 2015, 2018, 2021, 2024]
 
+STATE_NAME_MAPPING = {
+    "AGUASCALIENTES": "Aguascalientes",
+    "BAJA CALIFORNIA": "Baja California",
+    "BAJA CALIFORNIA SUR": "Baja California Sur",
+    "CAMPECHE": "Campeche",
+    "COAHUILA": "Coahuila",
+    "COLIMA": "Colima",
+    "CHIAPAS": "Chiapas",
+    "CHIHUAHUA": "Chihuahua",
+    "DISTRITO FEDERAL": "Ciudad de México",
+    "CIUDAD DE MEXICO": "Ciudad de México",
+    "CIUDAD DE MÉXICO": "Ciudad de México",
+    "DURANGO": "Durango",
+    "GUANAJUATO": "Guanajuato",
+    "GUERRERO": "Guerrero",
+    "HIDALGO": "Hidalgo",
+    "JALISCO": "Jalisco",
+    "MEXICO": "Estado de México",
+    "MÉXICO": "Estado de México",
+    "MICHOACAN": "Michoacán",
+    "MORELOS": "Morelos",
+    "NAYARIT": "Nayarit",
+    "NUEVO LEON": "Nuevo León",
+    "OAXACA": "Oaxaca",
+    "PUEBLA": "Puebla",
+    "QUERETARO": "Querétaro",
+    "QUINTANA ROO": "Quintana Roo",
+    "SAN LUIS POTOSI": "San Luis Potosí",
+    "SINALOA": "Sinaloa",
+    "SONORA": "Sonora",
+    "TABASCO": "Tabasco",
+    "TAMAULIPAS": "Tamaulipas",
+    "TLAXCALA": "Tlaxcala",
+    "VERACRUZ": "Veracruz",
+    "YUCATAN": "Yucatán",
+    "ZACATECAS": "Zacatecas",
+}
+
 @st.cache_data
 def load_heatmap_data():
     df_all =  pd.read_parquet(
@@ -18,6 +56,9 @@ def load_heatmap_data():
         columns=["AELEC", "EDONOM", "SV", "NV"],
         filters=[("AELEC", "in", elections_by_year)],
     )
+
+    df_all["EDONOM"] = df_all["EDONOM"].replace(STATE_NAME_MAPPING)
+
     grouped = (
         df_all.groupby(["AELEC", "EDONOM"])[["SV", "NV"]]
         .sum()
