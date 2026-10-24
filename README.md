@@ -60,6 +60,19 @@ streamlit run app.py
 
 Streamlit mostrará una URL local, normalmente `http://localhost:8501`, que puedes abrir en tu navegador.
 
+### Comandos Bash
+
+Desde la raíz del proyecto, puedes ejecutar la instalación completa en una terminal Bash:
+
+```bash
+cd codigo_ipk_ine_hackathon_2026
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+streamlit run app.py
+```
+
 ## Uso
 
 1. Abre la aplicación en el navegador.
