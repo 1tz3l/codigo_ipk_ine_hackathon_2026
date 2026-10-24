@@ -76,6 +76,9 @@ def load_data_for_year(selected_year):
         columns=["AELEC", "EDOCVE", "EDONOM", "SEXO", "EDAD", "SV", "NV"],
         filters=[("AELEC", "==", selected_year)],
     )
+
+    df_year["EDONOM"] = df_year["EDONOM"].replace(STATE_NAME_MAPPING)
+
     return df_year
 
 @st.cache_data
