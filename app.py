@@ -121,7 +121,8 @@ with col1:
     )
     map_grouped["Participación"] = (
         map_grouped["SV"] / (map_grouped["SV"] + map_grouped["NV"]) * 100
-    )
+    ).round(1)
+
     map_grouped["EDOCVE"] = map_grouped["EDOCVE"].astype(int)
 
     fig_map = px.choropleth_map(
@@ -130,13 +131,24 @@ with col1:
         locations="EDOCVE",
         featureidkey="properties.matched_edocve",
         color="Participación",
+        hover_name="EDONOM",
+        hover_data={
+            "EDOCVE": False,
+        },
+        labels={
+            "Participación": "% Participación"
+        },
         color_continuous_scale="Blues",
         range_color=[0, 100],
         map_style="carto-positron",
         center={"lat": 23.6345, "lon": -102.5528}, 
         zoom=4.2,
     )
-    fig_map.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}, height=400)
+    fig_map.update_layout(
+        margin={"r": 0, "t": 0, "l": 0, "b": 0}, 
+        height=400,
+        coloraxis_colorbar=dict(title="Participación (%)"),
+    )
     st.plotly_chart(fig_map, use_container_width=True)
 
     st.divider()
@@ -197,6 +209,13 @@ with col2:
         orientation="h",
         text="SV",
         color="SV",
+        hover_data={
+            "SV": ":,",
+        },
+        labels={
+            "SV": "Votos emitidos",
+            "EDONOM": "Estado",
+        },
         color_continuous_scale="Reds",
     )
     fig_list.update_layout(
