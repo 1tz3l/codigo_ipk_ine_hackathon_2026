@@ -90,9 +90,9 @@ geojson_data = load_geojson()
 df_heatmap_static = load_heatmap_data()
 
 # Panel de control del slider 2009 - 2024
-st.sidebar.header("Panel de control")
+st.sidebar.header("**Panel de control**")
 st.sidebar.info(
-    "**ⓘ Información:** Utiliza el control deslizante para visualizar los resultados históricos."
+    "**ⓘ** Utiliza los filtros para visualizar los resultados históricos por año y por sección."
 )
 
 selected_year = st.sidebar.select_slider(
@@ -101,14 +101,13 @@ selected_year = st.sidebar.select_slider(
     value=2009,
 )
 
-st.sidebar.markdown("---")
-st.sidebar.caption("Fuente: Conteos Censales de Participación Ciudadana (CCPC), INE")
-
 df_selected_year = load_data_for_year(selected_year)
 
 # Título y subtítulo del dashboard
-st.title("¿Cuántas mujeres votaron en tu estado?")
-st.subheader(f"Año de elección: {selected_year}")
+st.title("La participación electoral de las mujeres en México")
+st.markdown("---")
+st.subheader(f"Distribución territorial del voto femenino en {selected_year}")
+
 
 # Columnas
 col1, col2 = st.columns([1.3, 0.7])
@@ -143,6 +142,9 @@ with col1:
     st.divider()
 
     st.subheader("Histórico de la participación electoral por Estado")
+    st.markdown(
+        "En más de una década, los datos estatales confirman que las mujeres han demostrado ser un pilar importante en la participación democrática del país."
+    )
 
     pivot_heat = df_heatmap_static.pivot(
         index="AELEC", columns="EDONOM", values="Participación"
@@ -172,16 +174,24 @@ with col1:
     fig_heat.update_layout(margin={"r": 0, "t": 20, "l": 0, "b": 0}, height=320)
     st.plotly_chart(fig_heat,use_container_width=True)
 
+    st.markdown(
+        "Cada periodo electoral es un peldaño ganado con esfuerzo y tu voto individual suma una fuerza colosal. Desistir hoy es frenar una marcha que tomó décadas consolidar."
+    )
+    st.markdown(
+            "**Sigue abriendo el camino, tu voz es indispensable para mantener vivo el balance de tu estado.**"
+        )
+
 ## Columna 2: Lista con los estados que más votaron
 with col2:
-    st.subheader(f"Estados que más votaron en {selected_year}")
+    st.subheader(f"¿Cuántos votos emitieron las mujeres?")
+    st.markdown(f"Las entidades con mayor volumen de votos emitidos en {selected_year}")
 
-    top_15_list = (
-        map_grouped.sort_values(by="SV", ascending=False).head(15).reset_index(drop=True)
+    top_12_list = (
+        map_grouped.sort_values(by="SV", ascending=False).head(12).reset_index(drop=True)
     )
 
     fig_list = px.bar(
-        top_15_list,
+        top_12_list,
         x="SV",
         y="EDONOM",
         orientation="h",
@@ -200,3 +210,15 @@ with col2:
     )
     fig_list.update_traces(texttemplate="%{text:,}", textposition="outside")
     st.plotly_chart(fig_list, use_container_width=True)
+
+    st.markdown("---")
+    st.markdown("### **Haz la diferencia**")
+    st.markdown(
+        "Cuando un estado demuestra una alta participación electoral, significa que su ciudadanía está viva y vigilante. No votar es debilitar nuestra propia fuerza colectiva."
+    )
+    st.markdown(
+            "**¡Tu voto sí importa, ejércelo!**"
+    )
+
+st.markdown("---")
+st.caption("Fuente: Conteos Censales de Participación Ciudadana (CCPC), INE")
