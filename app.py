@@ -49,6 +49,12 @@ STATE_NAME_MAPPING = {
     "ZACATECAS": "Zacatecas",
 }
 
+SECTION_TYPE_MAPPING = {
+    "Urbana": "U",
+    "Mixta": "M",
+    "Rural": "R",
+}
+
 @st.cache_data
 def load_heatmap_data():
     df_all =  pd.read_parquet(
@@ -73,9 +79,11 @@ def load_heatmap_data():
 def load_data_for_year(selected_year):
     df_year = pd.read_parquet(
         "steps/process_geo_data_2/voting_data.parquet",
-        columns=["AELEC", "EDOCVE", "EDONOM", "SEXO", "EDAD", "SV", "NV"],
+        columns=["AELEC", "EDOCVE", "EDONOM", "TIPOSEC", "SEXO", "EDAD", "SV", "NV"],
         filters=[("AELEC", "==", selected_year)],
     )
+
+    df_year["TIPOSEC"] = df_year["TIPOSEC"].astype(str).str.strip().str.upper()
 
     df_year["EDONOM"] = df_year["EDONOM"].replace(STATE_NAME_MAPPING)
 
@@ -101,6 +109,21 @@ selected_year = st.sidebar.select_slider(
     value=2009,
 )
 
+selected_section_type_labels = st.sidebar.multiselect(
+    "Tipo de sección:",
+    options=list(SECTION_TYPE_MAPPING.keys()),
+    default=[],
+    help=("Se mostrarán por defecto todas las secciones. Seleccione una sección o dos secciones en específico para filtrar." 
+    ),
+)
+
+if selected_section_type_labels:
+    selected_section_type_codes = [
+        SECTION_TYPE_MAPPING[label] for label in selected_section_type_labels
+    ]
+else:
+    selected_section_type_codes = ["U", "M", "R"]
+
 df_selected_year = load_data_for_year(selected_year)
 
 # Título y subtítulo del dashboard
@@ -114,14 +137,31 @@ col1, col2 = st.columns([1.3, 0.7])
 
 ## Columna 1: Mapas
 with col1:
+    df_filtered_sections = df_selected_year[
+        df_selected_year["TIPOSEC"].isin(selected_section_type_codes)
+    ]
+
     map_grouped = (
         df_selected_year.groupby(["EDOCVE", "EDONOM"])[["SV", "NV"]]
+        .sum()
+        .reset_index()
+    )
+    map_grouped = (
+        df_filtered_sections.groupby(["EDOCVE", "EDONOM"])[["SV", "NV"]]
         .sum()
         .reset_index()
     )
     map_grouped["Participación"] = (
         map_grouped["SV"] / (map_grouped["SV"] + map_grouped["NV"]) * 100
     ).round(1)
+
+    map_grouped["EDOCVE"] = map_grouped["EDOCVE"].astype(int)
+
+    section_type_text_displayed = (
+        ", ".join(selected_section_type_labels) if selected_section_type_labels else "Todas"
+    )
+    
+    map_grouped["tipo_seccion"] = section_type_text_displayed
 
     map_grouped["EDOCVE"] = map_grouped["EDOCVE"].astype(int)
 
@@ -134,9 +174,11 @@ with col1:
         hover_name="EDONOM",
         hover_data={
             "EDOCVE": False,
+            "tipo_seccion": True,
         },
         labels={
-            "Participación": "% Participación"
+            "Participación": "% Participación",
+            "tipo_seccion": "Tipo de sección"
         },
         color_continuous_scale="Blues",
         range_color=[0, 100],
