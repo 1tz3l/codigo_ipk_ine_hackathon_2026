@@ -72,7 +72,7 @@ def load_heatmap_data():
     )
     grouped["Participación"] = (
         grouped["SV"] / (grouped["SV"] + grouped["NV"]) * 100
-    )
+    ).round(1)
     return grouped
 
 @st.cache_data
@@ -160,7 +160,7 @@ with col1:
     section_type_text_displayed = (
         ", ".join(selected_section_type_labels) if selected_section_type_labels else "Todas"
     )
-    
+
     map_grouped["tipo_seccion"] = section_type_text_displayed
 
     map_grouped["EDOCVE"] = map_grouped["EDOCVE"].astype(int)
