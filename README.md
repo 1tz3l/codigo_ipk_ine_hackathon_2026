@@ -4,25 +4,39 @@ Dashboard desarrollado por el equipo **Código IPK** para visualizar la particip
 
 ## Características
 
-- Exploración histórica de 2009 a 2024 mediante un selector de año.
-- Mapa coroplético de participación por entidad federativa.
-- Comparación de la participación entre estados y años.
-- Ranking de los 15 estados con mayor número de votos emitidos.
+- Exploración de los procesos electorales de 2009, 2012, 2015, 2018, 2021 y 2024.
+- Filtros por tipo de sección: urbana, mixta y rural, aplicables al mapa y al ranking.
+- Mapa coroplético para comparar la participación por entidad federativa.
+- Mapa de calor con la participación histórica de cada estado por año electoral.
+- Ranking de las 12 entidades con más votos emitidos para el año y los filtros seleccionados.
 
 ## Estructura del proyecto
 
 ```text
 codigo_ipk_ine_hackathon_2026/
 ├── app.py
+├── assets/
+│    ├── fonts/
+│    │   ├── averia_sans
+│    │   └── league-spartan
+│    └── ine_200px.png
+├── constants.py
+├── ccpc_data/
+│    ├── 2009/
+│    ├── 2012/
+│    ├── 2015/
+│    ├── 2018/
+│    ├── 2021/
+│    └── 2024/
 ├── README.md
 ├── requirements.txt
-├── scripts/
-│   └── generate_summary_file.py
+│
 └── steps/
-    ├── compress_ccpc_data_1/
-    └── process_geo_data_2/
-        ├── voting_data.parquet
-        └── matched_geo_data.geojson
+│    ├── compress_ccpc_data_1/
+│    └── process_geo_data_2/
+│       ├── voting_data.parquet
+│       └── matched_geo_data.geojson
+└── style.css
 ```
 
 ## Requisitos
@@ -76,9 +90,10 @@ streamlit run app.py
 ## Uso
 
 1. Abre la aplicación en el navegador.
-2. Selecciona un año en el panel lateral, entre 2009 y 2024.
-3. Consulta el mapa y el ranking actualizados para ese año.
-4. Usa el mapa de calor para comparar la participación histórica entre entidades.
+2. Selecciona un año electoral en el panel lateral.
+3. Opcionalmente, filtra por tipo de sección: urbana, mixta o rural. Si no seleccionas ninguna, se incluyen todos los tipos.
+4. Consulta el mapa y el ranking de las 12 entidades con más votos emitidos, actualizados según el año y el filtro.
+5. Usa el mapa de calor para comparar la participación histórica entre estados y años electorales.
 
 ## Datos
 
