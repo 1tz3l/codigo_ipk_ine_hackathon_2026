@@ -1,0 +1,80 @@
+@font-face {
+    font-family: "league-spartan";
+    src: url("assets/fonts/league-spartan/LeagueSpartan-Bold.otf")
+        format("opentype");
+    font-weight: bold;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "averia-sans";
+    src: url("assets/fonts/averia_sans/AveriaSans-Regular.ttf")
+        format("truetype");
+    font-weight: normal;
+    font-display: swap;
+}
+
+/* Titles created by Streamlit */
+[data-testid="stAppViewContainer"] h1,
+.hero-title {
+    font-family: "league-spartan", sans-serif !important;
+    font-size: 2.8rem !important;
+    color: #363176;
+}
+
+/* Subtitles */
+[data-testid="stAppViewContainer"] h2,
+[data-testid="stAppViewContainer"] h3,
+.hero-subtitle {
+    font-family: "averia-sans", sans-serif !important;
+    color: #363176;
+}
+
+/* Normal markdown text */
+[data-testid="stMarkdownContainer"],
+.content-text {
+    font-family: "averia-sans", sans-serif !important;
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: #363176;
+}
+
+[data-testid="stSidebar"] {
+    position: relative !important;
+}
+
+[data-testid="stSidebarContent"] {
+    height: 100vh !important;
+    overflow-y: auto;
+}
+
+[data-testid="stSidebar"] [data-testid="stElementContainer"]:has(img) {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    height: auto;
+    min-height: 90px;
+    box-sizing: border-box;
+    padding: 0.5rem 0 0;
+    border-top: 1px solid #E2E8E8;
+    overflow: visible;
+}
+
+[data-testid="stSidebar"] [data-testid="stElementContainer"]:has(img) img {
+    border-radius: 0 !important;
+    object-fit: contain !important;
+    max-height: 120px !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    margin: 0 auto;
+    display: block;
+}
+
+[data-testid="stSidebar"] img {
+    display: block;
+    width: 100%;
+    max-height: 90px;
+    object-fit: contain;
+}
