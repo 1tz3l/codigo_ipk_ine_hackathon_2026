@@ -16,6 +16,12 @@ st.set_page_config(
     page_title="Participación electoral de las mujeres en México", layout="wide"
 )
 
+def load_css():
+    with open("style.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css()
+
 elections_by_year = [2009, 2012, 2015, 2018, 2021, 2024]
 
 @st.cache_data
@@ -87,6 +93,12 @@ if selected_section_type_labels:
     ]
 else:
     selected_section_type_codes = ["U", "M", "R"]
+
+st.sidebar.image(
+    "assets/ine_200px.png", 
+    width="content", #For `use_container_width=True`, use `width='stretch'`. 
+    #For `use_container_width=False`, use `width='content'`.
+)
 
 df_selected_year = load_data_for_year(selected_year)
 
