@@ -3,62 +3,31 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from constants import (
+    STATE_NAME_MAPPING,
+    SECTION_TYPE_MAPPING,
+    CUSTOM_MAP_SCALE, 
+    CUSTOM_HEATMAP_SCALE, 
+    CUSTOM_BAR_SCALE
+)
 
 # Configurar el ancho del layout para los mapas
 st.set_page_config(
     page_title="Participación electoral de las mujeres en México", layout="wide"
 )
 
+def load_css():
+    with open("style.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css()
+
 elections_by_year = [2009, 2012, 2015, 2018, 2021, 2024]
-
-STATE_NAME_MAPPING = {
-    "AGUASCALIENTES": "Aguascalientes",
-    "BAJA CALIFORNIA": "Baja California",
-    "BAJA CALIFORNIA SUR": "Baja California Sur",
-    "CAMPECHE": "Campeche",
-    "COAHUILA": "Coahuila",
-    "COLIMA": "Colima",
-    "CHIAPAS": "Chiapas",
-    "CHIHUAHUA": "Chihuahua",
-    "DISTRITO FEDERAL": "Ciudad de México",
-    "CIUDAD DE MEXICO": "Ciudad de México",
-    "CIUDAD DE MÉXICO": "Ciudad de México",
-    "DURANGO": "Durango",
-    "GUANAJUATO": "Guanajuato",
-    "GUERRERO": "Guerrero",
-    "HIDALGO": "Hidalgo",
-    "JALISCO": "Jalisco",
-    "MEXICO": "Estado de México",
-    "MÉXICO": "Estado de México",
-    "MICHOACAN": "Michoacán",
-    "MORELOS": "Morelos",
-    "NAYARIT": "Nayarit",
-    "NUEVO LEON": "Nuevo León",
-    "OAXACA": "Oaxaca",
-    "PUEBLA": "Puebla",
-    "QUERETARO": "Querétaro",
-    "QUINTANA ROO": "Quintana Roo",
-    "SAN LUIS POTOSI": "San Luis Potosí",
-    "SINALOA": "Sinaloa",
-    "SONORA": "Sonora",
-    "TABASCO": "Tabasco",
-    "TAMAULIPAS": "Tamaulipas",
-    "TLAXCALA": "Tlaxcala",
-    "VERACRUZ": "Veracruz",
-    "YUCATAN": "Yucatán",
-    "ZACATECAS": "Zacatecas",
-}
-
-SECTION_TYPE_MAPPING = {
-    "Urbana": "U",
-    "Mixta": "M",
-    "Rural": "R",
-}
 
 @st.cache_data
 def load_heatmap_data():
     df_all =  pd.read_parquet(
-        "steps/process_geo_data_2/voting_data.parquet",
+        "steps/process_geo_data_2/voting_data_summary.parquet",
         columns=["AELEC", "EDONOM", "SV", "NV"],
         filters=[("AELEC", "in", elections_by_year)],
     )
@@ -78,8 +47,8 @@ def load_heatmap_data():
 @st.cache_data
 def load_data_for_year(selected_year):
     df_year = pd.read_parquet(
-        "steps/process_geo_data_2/voting_data.parquet",
-        columns=["AELEC", "EDOCVE", "EDONOM", "TIPOSEC", "SEXO", "EDAD", "SV", "NV"],
+        "steps/process_geo_data_2/voting_data_summary.parquet",
+        columns=["AELEC", "EDOCVE", "EDONOM", "TIPOSEC", "SEXO", "SV", "NV"],
         filters=[("AELEC", "==", selected_year)],
     )
 
@@ -98,14 +67,15 @@ geojson_data = load_geojson()
 df_heatmap_static = load_heatmap_data()
 
 # Panel de control del slider 2009 - 2024
-st.sidebar.header("**Panel de control**")
-st.sidebar.info(
-    "**ⓘ** Utiliza los filtros para visualizar los resultados históricos por año y por sección."
+st.sidebar.header(
+    "**Panel de control**",
+    help=("Utilice los filtros para visualizar los resultados históricos por año y por sección."),
 )
 
 selected_year = st.sidebar.select_slider(
     "Año de elección:",
     options=elections_by_year,
+    help=("Arrastre el punto para visualizar los resultados históricos por año de elección."),
     value=2009,
 )
 
@@ -124,13 +94,18 @@ if selected_section_type_labels:
 else:
     selected_section_type_codes = ["U", "M", "R"]
 
+st.sidebar.image(
+    "assets/ine_200px.png", 
+    width="content", #For `use_container_width=True`, use `width='stretch'`. 
+    #For `use_container_width=False`, use `width='content'`.
+)
+
 df_selected_year = load_data_for_year(selected_year)
 
 # Título y subtítulo del dashboard
 st.title("La participación electoral de las mujeres en México")
 st.markdown("---")
 st.subheader(f"Distribución territorial del voto femenino en {selected_year}")
-
 
 # Columnas
 col1, col2 = st.columns([1.3, 0.7])
@@ -180,7 +155,7 @@ with col1:
             "Participación": "% Participación",
             "tipo_seccion": "Tipo de sección"
         },
-        color_continuous_scale="Blues",
+        color_continuous_scale=CUSTOM_MAP_SCALE,
         range_color=[0, 100],
         map_style="carto-positron",
         center={"lat": 23.6345, "lon": -102.5528}, 
@@ -214,7 +189,7 @@ with col1:
         labels=dict(x="Estado", y="Año", color="Participación (%)"),
         x=list(pivot_heat.columns),
         y=years_str,
-        color_continuous_scale="Blues",
+        color_continuous_scale=CUSTOM_HEATMAP_SCALE,
         aspect="auto",
     )
     fig_heat.update_yaxes(
@@ -258,7 +233,7 @@ with col2:
             "SV": "Votos emitidos",
             "EDONOM": "Estado",
         },
-        color_continuous_scale="Reds",
+        color_continuous_scale=CUSTOM_BAR_SCALE,
     )
     fig_list.update_layout(
         xaxis_title="Total de votos emitidos",
