@@ -27,7 +27,7 @@ elections_by_year = [2009, 2012, 2015, 2018, 2021, 2024]
 @st.cache_data
 def load_heatmap_data():
     df_all =  pd.read_parquet(
-        "steps/process_geo_data_2/voting_data.parquet",
+        "steps/process_geo_data_2/voting_data_summary.parquet",
         columns=["AELEC", "EDONOM", "SV", "NV"],
         filters=[("AELEC", "in", elections_by_year)],
     )
@@ -47,8 +47,8 @@ def load_heatmap_data():
 @st.cache_data
 def load_data_for_year(selected_year):
     df_year = pd.read_parquet(
-        "steps/process_geo_data_2/voting_data.parquet",
-        columns=["AELEC", "EDOCVE", "EDONOM", "TIPOSEC", "SEXO", "EDAD", "SV", "NV"],
+        "steps/process_geo_data_2/voting_data_summary.parquet",
+        columns=["AELEC", "EDOCVE", "EDONOM", "TIPOSEC", "SEXO", "SV", "NV"],
         filters=[("AELEC", "==", selected_year)],
     )
 
