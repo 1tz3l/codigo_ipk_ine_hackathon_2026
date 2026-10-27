@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from constants import CUSTOM_MAP_SCALE, CUSTOM_HEATMAP_SCALE, CUSTOM_BAR_SCALE
 
 # Configurar el ancho del layout para los mapas
 st.set_page_config(
@@ -98,14 +99,15 @@ geojson_data = load_geojson()
 df_heatmap_static = load_heatmap_data()
 
 # Panel de control del slider 2009 - 2024
-st.sidebar.header("**Panel de control**")
-st.sidebar.info(
-    "**ⓘ** Utiliza los filtros para visualizar los resultados históricos por año y por sección."
+st.sidebar.header(
+    "**Panel de control**",
+    help=("Utilice los filtros para visualizar los resultados históricos por año y por sección."),
 )
 
 selected_year = st.sidebar.select_slider(
     "Año de elección:",
     options=elections_by_year,
+    help=("Arrastre el punto para visualizar los resultados históricos por año de elección."),
     value=2009,
 )
 
@@ -130,7 +132,6 @@ df_selected_year = load_data_for_year(selected_year)
 st.title("La participación electoral de las mujeres en México")
 st.markdown("---")
 st.subheader(f"Distribución territorial del voto femenino en {selected_year}")
-
 
 # Columnas
 col1, col2 = st.columns([1.3, 0.7])
@@ -180,7 +181,7 @@ with col1:
             "Participación": "% Participación",
             "tipo_seccion": "Tipo de sección"
         },
-        color_continuous_scale="Blues",
+        color_continuous_scale=CUSTOM_MAP_SCALE,
         range_color=[0, 100],
         map_style="carto-positron",
         center={"lat": 23.6345, "lon": -102.5528}, 
@@ -214,7 +215,7 @@ with col1:
         labels=dict(x="Estado", y="Año", color="Participación (%)"),
         x=list(pivot_heat.columns),
         y=years_str,
-        color_continuous_scale="Blues",
+        color_continuous_scale=CUSTOM_HEATMAP_SCALE,
         aspect="auto",
     )
     fig_heat.update_yaxes(
@@ -258,7 +259,7 @@ with col2:
             "SV": "Votos emitidos",
             "EDONOM": "Estado",
         },
-        color_continuous_scale="Reds",
+        color_continuous_scale=CUSTOM_BAR_SCALE,
     )
     fig_list.update_layout(
         xaxis_title="Total de votos emitidos",

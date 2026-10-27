@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#363273"             # Color principal (sliders, buttons, checkboxes)
+backgroundColor = "#ebe2de"          # Color principal de fondo
+secondaryBackgroundColor = "#d6cec9" # Color de fondo de sidebar y card
+textColor = "#0F172A"                # Color principal del texto
+font = "sans-serif"                    # Tipo de font ("sans serif", "serif", or "monospace")
