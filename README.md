@@ -2,6 +2,8 @@
 
 Dashboard desarrollado por el equipo **Código IPK** para visualizar la participación electoral histórica de las mujeres en México y hacer más accesible el análisis de los Conteos de Participación Ciudadana (CCPC) del INE.
 
+<img width="1864" height="903" alt="dashboard-preview-2026-10-27" src="https://github.com/user-attachments/assets/48193de5-88cd-4f93-a422-e629cc073fa9" />
+
 ## Características
 
 - Exploración de los procesos electorales de 2009, 2012, 2015, 2018, 2021 y 2024.
