@@ -36,7 +36,7 @@ codigo_ipk_ine_hackathon_2026/
 └── steps/
 │    ├── compress_ccpc_data_1/
 │    └── process_geo_data_2/
-│       ├── voting_data.parquet
+│       ├── voting_data_summary.parquet
 │       └── matched_geo_data.geojson
 └── style.css
 ```
@@ -102,7 +102,7 @@ streamlit run app.py
 El dashboard utiliza información de los Conteos Censales de Participación Ciudadana (CCPC) del INE. Los datos y los polígonos geográficos procesados se encuentran en:
 
 ```text
-steps/process_geo_data_2/voting_data.parquet
+steps/process_geo_data_2/voting_data_summary.parquet
 steps/process_geo_data_2/matched_geo_data.geojson
 ```
 
