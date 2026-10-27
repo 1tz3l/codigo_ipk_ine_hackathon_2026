@@ -1,0 +1,31 @@
+/* Custom Scrollytelling Card */
+.story-card {
+    background-color: #FFFFFF;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-left: 6px solid #1E3A8A;
+    margin-bottom: 24px;
+}
+
+/* Custom Page Title */
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1E3A8A;
+    margin-bottom: 0.5rem;
+}
+
+/* Custom Subtitle */
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #475569;
+    margin-bottom: 1.5rem;
+}
+
+/* Body Text Formatting */
+.content-text {
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: #334155;
+}
